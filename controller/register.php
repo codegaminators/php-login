@@ -31,7 +31,7 @@ if (!empty($errors)) {
     header("LOCATION:/register.php");
 }
 
-$ecryptedPassword = password_hash($password, PASSWORD_BCRYPT);
+$ecryptedPassword = password_hash($password, PASSWORD_DEFAULT);
 
 $sql = "INSERT INTO `users` (`name`, `email`, `password`) VALUES (?,?,?)";
 
@@ -41,6 +41,6 @@ $statement->bind_param('sss', $name, $email, $ecryptedPassword);
 if ($statement->execute()) {
     echo " Success";
 } else {
-    $_SESSION['errors'][] = 'Something went wrong';
+    $_SESSION['errors'][] = 'Email is already registered';
     header("LOCATION:/register.php");
 }
