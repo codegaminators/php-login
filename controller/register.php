@@ -4,43 +4,33 @@ require_once(__DIR__ . "/../config/database.php");
 
 $name = trim($_POST['name']);
 $email = trim($_POST['email']);
-$password = trim($_POST['password']);
-$password_confirmation = trim($_POST['password_confirmation']);
+$password = $_POST['password'];
+$password_confirmation = $_POST['password_confirmation'];
 
 $errors = [];
 
-if (
-    empty($name) ||
-    empty($email) ||
-    empty($password) || 
-    empty($password_confirmation)
-) {
-    $errors[] = 'All fields are required';
-}
 
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    $errors[] = 'Please enter a valid email';
+    $errors[] = "email is invalidate";
 }
 
-if ($password !== $password_confirmation) {
-    $errors[] = 'Password and password confirmation should be the same';
+if ($password != $password_confirmation) {
+    $errors[] = "password is not thesame with password confirmation";
 }
 
 if (!empty($errors)) {
     $_SESSION['errors'] = $errors;
-    header("LOCATION:/register.php");
+    header("Location:/register.php");
 }
 
 $ecryptedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-$sql = "INSERT INTO `users` (`name`, `email`, `password`) VALUES (?,?,?)";
+$sql = "INSERT INTO users (`name`,`email`,`password`) VALUES (?,?,?);";
 
 $statement = $dbConnection->prepare($sql);
 $statement->bind_param('sss', $name, $email, $ecryptedPassword);
+$isSuccessful = $statement->execute();
 
-if ($statement->execute()) {
-    echo " Success";
-} else {
-    $_SESSION['errors'][] = 'Email is already registered';
-    header("LOCATION:/register.php");
+if ($isSuccessful) {
+    echo "registered";
 }

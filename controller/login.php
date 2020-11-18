@@ -1,42 +1,33 @@
 <?php
 
-require_once(__DIR__ . "/../config/database.php");
-unset($_SESSION['errors']);
 
-$email = trim($_POST['email']);
-$password = trim($_POST['password']);
+require_once(__DIR__ . "/../config/database.php");
 
 $errors = [];
-
-if (empty($email) || empty($password)) {
-    $errors[] = 'Email and password is required';
-}
+$email = $_POST['email'];
+$password =  $_POST['password'];
 
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    $errors[] = 'Please enter a valid email';
-}
-
-if (!empty($errors)) {
+    $errors[] = 'Invalid Email Provided';
     $_SESSION['errors'] = $errors;
-    return header("LOCATION:/");
+    header("Location:/index.php");
 }
+$sql = "SELECT * FROM users WHERE email='{$email}'";
 
-$sql = "SELECT * FROM users WHERE email = '{$email}';";
 $result = $dbConnection->query($sql);
 
-if (!$result->num_rows) {
-    $errors[] = 'user does not exist';
+if ($result->num_rows > 0) {
+    $user = $result->fetch_assoc();
+
+    if (password_verify($password, $user['password'])) {
+        echo "logged in";
+    } else {
+        $errors[] = "incorrect password";
+        $_SESSION['errors'] = $errors;
+        header("Location:/index.php");
+    }
+} else {
+    $errors[] = "User does not exist";
     $_SESSION['errors'] = $errors;
-    return header("LOCATION:/");
+    header("Location:/index.php");
 }
-
-$user =  $result->fetch_assoc();
-
-if (!password_verify($password, $user['password'])) {
-    $errors[] = ' invalid credentials';
-    $_SESSION['errors'] = $errors;
-    return header("LOCATION:/");
-}
-
-$_SESSION['is_logged_in'] = true;
-echo " Logged In";

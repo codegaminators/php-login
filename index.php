@@ -18,8 +18,8 @@ if (!isset($_SESSION)) {
 <body>
     <main class="container d-flex justify-content-center align-items-center vh-100">
     <form class="card card-body" method="POST" action="/controller/login.php">
-        <?php include(__DIR__ . "/controller/errors.php"); ?>
     <div class="form-group">
+        <?php include(__DIR__ . '/controller/errors.php'); ?>
             <label for="exampleInputEmail1">Email address</label>
             <input type="email" name="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
             <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
